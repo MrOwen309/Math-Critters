@@ -1,0 +1,21 @@
+// Math Critters service worker: lets the game open with no internet.
+// When you upload a new version, change this number so iPads pick it up.
+const CACHE = 'math-critters-v1';
+const FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
+
+self.addEventListener('install', e => {
+  e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)).then(() => self.skipWaiting()));
+});
+self.addEventListener('activate', e => {
+  e.waitUntil(caches.keys().then(keys => Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)))).then(() => self.clients.claim()));
+});
+self.addEventListener('fetch', e => {
+  if (e.request.method !== 'GET') return;
+  // The game page: try the internet first (to get updates), fall back to the saved copy.
+  if (e.request.mode === 'navigate') {
+    e.respondWith(fetch(e.request).then(r => { const copy = r.clone(); caches.open(CACHE).then(c => c.put('./index.html', copy)); return r; })
+      .catch(() => caches.match('./index.html')));
+    return;
+  }
+  e.respondWith(caches.match(e.request).then(hit => hit || fetch(e.request)));
+});
