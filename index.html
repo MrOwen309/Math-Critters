@@ -269,6 +269,49 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none
 .note{font-size:.9rem;color:var(--ink-soft);font-weight:600;margin:6px 0 0}
 .danger{background:#fff;color:var(--red);box-shadow:0 4px 0 #ffd6d8;font-size:1rem}
 
+/* ---------- buddy, levels & evolving ---------- */
+.buddyInfo{text-align:center;margin-top:-2px}
+.buddyInfo .nm,.feedWrap .nm{font-weight:800;font-size:1.4rem;line-height:1.1}
+.buddyInfo .sub,.feedWrap .sub{font-weight:700;color:var(--ink-soft);font-size:.95rem}
+.xp{margin:8px 0 12px}
+.xp .label{display:flex;justify-content:space-between;gap:8px;font-weight:700;font-size:.95rem;margin-bottom:3px;color:var(--ink-soft)}
+.xp .track > div{background:linear-gradient(90deg,var(--green),#7be0a9)}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px}
+.actions .btn,.feedBtns .btn{font-size:1.1rem;padding:10px 8px;line-height:1.1;flex-direction:column;gap:2px}
+.btn small{font-size:.85rem;font-weight:700;opacity:.92}
+.btn[disabled]{opacity:.45;filter:grayscale(.4)}
+.btn.dim{opacity:.6}
+.btn.evolve{background:linear-gradient(90deg,#ffb300,#ff6fae,#7c5cff);color:#fff;box-shadow:0 5px 0 #5a3fd6;grid-column:1/-1}
+.glow{filter:drop-shadow(0 0 8px #fff6a8) drop-shadow(0 0 16px #ffd23f)}
+.feedWrap{text-align:center}
+.feedStage{width:200px;height:200px;margin:0 auto}
+.feedBtns{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:8px}
+.wallet{font-weight:800;font-size:1.2rem;margin:2px 0 4px}
+.evoHint{font-weight:700;color:var(--ink-soft);margin:12px 0 0}
+.flyBerry{position:fixed;font-size:2rem;line-height:1;z-index:30;pointer-events:none;transition:transform .42s cubic-bezier(.3,.7,.4,1),opacity .42s}
+.revealNote{font-weight:700;color:var(--ink-soft);margin:8px 0 0;font-size:1.05rem}
+.evoPanel{background:radial-gradient(circle at 50% 45%,#5b4ec9,#2b2340 75%);border-radius:28px;padding:22px 18px 24px;color:#fff;text-align:center;min-height:440px}
+.evoPanel h2{font-size:1.7rem;line-height:1.15;margin:0;min-height:2.4em}
+.evoStage{width:250px;height:250px;margin:6px auto;position:relative}
+.evoStage > div{position:absolute;inset:0;transition:opacity .05s}
+.whiteout svg{filter:brightness(0) invert(1) drop-shadow(0 0 8px #fff) drop-shadow(0 0 18px #ffd23f)}
+.flash{position:fixed;inset:0;background:#fff;z-index:45;pointer-events:none;animation:flash 1s ease forwards}
+@keyframes flash{0%{opacity:0}20%{opacity:1}100%{opacity:0}}
+.cc .dots{display:flex;gap:4px;justify-content:center;margin-top:3px}
+.cc .dots i{width:8px;height:8px;border-radius:50%;background:#e4dcf5}
+.cc .dots i.on{background:var(--purple)}
+.cc .ready{position:absolute;top:6px;left:8px;font-size:1.05rem}
+.line{display:flex;align-items:center;justify-content:center;gap:2px;margin:6px 0 14px}
+.line .form{width:31%;text-align:center;border-radius:16px;padding:4px 0 6px}
+.line .form.now{background:#f3eeff}
+.line .form .who{width:100%;aspect-ratio:1}
+.line .form b{display:block;font-size:.95rem;line-height:1.1}
+.line .form small{color:var(--ink-soft);font-weight:700;font-size:.8rem}
+.line .arr{font-size:1.2rem;color:var(--ink-soft)}
+.dBtns{display:flex;flex-direction:column;gap:10px}
+#resSpend{margin-top:12px}
+#resSpend:empty{display:none}
+
 @media (max-height:700px){
   .stage{height:84px}.stage .who{width:80px;height:80px}
   .key{height:56px}.q{font-size:3.2rem}.ans{height:56px;font-size:2.4rem}
@@ -286,16 +329,14 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none
   <section class="screen active" id="home">
     <div class="homeTop">
       <span class="pill" id="streak"></span>
-      <span class="pill" id="homeEggs"></span>
+      <span class="pill" id="homeBerries"></span>
     </div>
     <h1 class="logo">Math <span>Critters</span></h1>
     <div class="buddyStage" id="homeBuddy"><div class="bubble" id="bubble"></div><div id="homeBuddySvg" class="bob" style="width:100%;height:100%"></div></div>
-    <div class="buddyName" id="buddyName"></div>
-    <div class="eggMeter">
-      <div class="label"><span>🫐 Berries</span><span id="berryText"></span></div>
-      <div class="track"><div id="berryFill"></div></div>
-    </div>
+    <div class="buddyInfo"><div class="nm" id="buddyName"></div><div class="sub" id="buddySub"></div></div>
+    <div class="xp" id="homeXp"><div class="label"><span id="xpLeft"></span><span id="xpRight"></span></div><div class="track"><div id="xpFill"></div></div></div>
     <button class="btn btn-egg pulse hidden" id="hatchBtn"></button>
+    <div class="actions" id="homeActions"></div>
     <div class="modes">
       <button class="mode speed" data-mode="speed"><span class="ic">⚡</span><b>Speed Round</b><small>How many can you get?</small></button>
       <button class="mode practice" data-mode="practice"><span class="ic">🎯</span><b>Practice</b><small>Work on one skill</small></button>
@@ -355,6 +396,7 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none
       <div class="earned" id="resEarned"></div>
       <div class="missed" id="resMissed"></div>
       <button class="btn btn-egg wide pulse hidden" id="resHatch" style="margin-top:10px"></button>
+      <div class="row" id="resSpend"></div>
       <div class="row">
         <button class="btn" id="againBtn">Play again</button>
         <button class="btn ghost" data-go="home">Home</button>
@@ -374,11 +416,39 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none
         <div class="who" id="revealWho"></div>
         <div class="nm" id="revealName"></div>
         <div id="revealBadges"></div>
+        <p class="revealNote" id="revealNote"></p>
         <div class="btns">
+          <button class="btn evolve pulse hidden" id="evolveNow">✨ Evolve it now!</button>
           <button class="btn pink" id="makeBuddy">Make my buddy 💜</button>
           <button class="btn btn-egg" id="hatchNext"></button>
           <button class="btn ghost" data-go="home">Done</button>
         </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FEED -->
+  <section class="screen" id="feed">
+    <div class="bar"><button class="back" data-go="home">←</button><h2>Feed your buddy</h2></div>
+    <div class="card feedWrap">
+      <div class="feedStage" id="feedWho"></div>
+      <div class="nm" id="feedName"></div>
+      <div class="sub" id="feedSub"></div>
+      <div class="xp"><div class="label"><span id="fxLeft"></span><span id="fxRight"></span></div><div class="track"><div id="fxFill"></div></div></div>
+      <div class="wallet" id="feedWallet"></div>
+      <div class="feedBtns" id="feedBtns"></div>
+      <p class="evoHint" id="evoHint"></p>
+    </div>
+  </section>
+
+  <!-- EVOLVE -->
+  <section class="screen" id="evolve">
+    <div class="evoPanel">
+      <h2 id="evoMsg"></h2>
+      <div class="evoStage"><div id="evoOld"></div><div id="evoNew"></div></div>
+      <div id="evoDone" class="hidden">
+        <div id="evoBadges"></div>
+        <button class="btn green wide" id="evoOk" style="margin-top:16px">Yay! 🎉</button>
       </div>
     </div>
   </section>
@@ -388,7 +458,19 @@ button{font-family:inherit;color:inherit;cursor:pointer;border:0;background:none
     <div class="bar"><button class="back" data-go="home">←</button><h2>My Critters</h2></div>
     <div class="collHead" id="collHead"></div>
     <div class="collGrid" id="collGrid"></div>
-    <p class="note" style="text-align:center;margin-top:12px">Tap a critter to make it your buddy. Hatch the same one again to level it up!</p>
+    <p class="note" style="text-align:center;margin-top:12px">Tap a critter to see how it evolves. Each one has 3 forms: Baby, Junior and Super!</p>
+  </section>
+
+  <!-- ONE CRITTER -->
+  <section class="screen" id="detail">
+    <div class="bar"><button class="back" data-go="collection">←</button><h2 id="dTitle"></h2></div>
+    <div class="card" style="text-align:center">
+      <div id="dBadges"></div>
+      <div class="xp" style="margin-top:12px"><div class="label"><span id="dxLeft"></span><span id="dxRight"></span></div><div class="track"><div id="dxFill"></div></div></div>
+      <h3 style="margin:10px 0 0">Evolution</h3>
+      <div class="line" id="dLine"></div>
+      <div class="dBtns" id="dBtns"></div>
+    </div>
   </section>
 
   <!-- PARENT -->
@@ -430,28 +512,35 @@ const todayStr = (d = new Date()) => `${d.getFullYear()}-${String(d.getMonth()+1
 const STORE = 'mathCritters_v1';
 const DEFAULT = {
   berries: 0, eggs: 1,            // a free starter egg!
-  collection: {}, buddy: null,
+  critters: {},                   // id -> { lv, xp (toward next level), stage: 0 Baby / 1 Junior / 2 Super }
+  buddy: null,
   facts: {},                      // key -> {n, c, r:[last 5 right/wrong], t:[last 5 correct times]}
   best: {},
   stats: { answered: 0, correct: 0, sessions: 0 },
   days: { last: null, streak: 0 },
   last: { speed: { skill: 'add', len: 60 }, practice: { skill: 'mul', len: 20 } },
-  settings: { sound: true, division: false, style: 'type', autoGo: true, perEgg: 15, level: 'facts', tables: [0, 1, 2, 5, 10] }
+  settings: { sound: true, division: false, style: 'type', autoGo: true, eggPrice: 40, speed: 'normal', level: 'facts', tables: [0, 1, 2, 5, 10] },
+  v2tip: false
 };
 function load() {
   const base = JSON.parse(JSON.stringify(DEFAULT));
-  try {
-    const raw = localStorage.getItem(STORE);
-    if (raw) {
-      const d = JSON.parse(raw);
-      return { ...base, ...d,
-        stats: { ...base.stats, ...(d.stats || {}) },
-        days: { ...base.days, ...(d.days || {}) },
-        last: { ...base.last, ...(d.last || {}) },
-        settings: { ...base.settings, ...(d.settings || {}) } };
-    }
-  } catch (e) {}
-  return base;
+  let d = null;
+  try { const raw = localStorage.getItem(STORE); if (raw) d = JSON.parse(raw); } catch (e) {}
+  if (!d) return base;
+  const s = { ...base, ...d,
+    stats: { ...base.stats, ...(d.stats || {}) },
+    days: { ...base.days, ...(d.days || {}) },
+    last: { ...base.last, ...(d.last || {}) },
+    settings: { ...base.settings, ...(d.settings || {}) } };
+  if (!d.critters) {
+    // Upgrading from the first version: critters she already has keep the look she knows (Junior form).
+    s.critters = {};
+    Object.entries(d.collection || {}).forEach(([id, n]) => { s.critters[id] = { lv: Math.min(4 + n, 9), xp: 0, stage: 1 }; });
+    s.settings.eggPrice = 40;
+  }
+  delete s.collection; delete s.settings.perEgg;
+  if (s.buddy && !s.critters[s.buddy]) s.buddy = Object.keys(s.critters)[0] || null;
+  return s;
 }
 let S = load();
 function save() { try { localStorage.setItem(STORE, JSON.stringify(S)); } catch (e) {} }
@@ -487,9 +576,9 @@ const sfx = {
 
 /* ---------------- helpers: toast + confetti ---------------- */
 let toastT;
-function toast(msg) {
+function toast(msg, ms = 2200) {
   const t = $('#toast'); t.textContent = msg; t.classList.add('show');
-  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), 2000);
+  clearTimeout(toastT); toastT = setTimeout(() => t.classList.remove('show'), ms);
 }
 function confetti(n = 70) {
   const colors = ['#ff6fae', '#7c5cff', '#ffd23f', '#2fbf7f', '#3fa2f7', '#ff9636'];
@@ -508,29 +597,69 @@ function confetti(n = 70) {
 function restartAnim(el, cls) { el.classList.remove(cls); void el.offsetWidth; el.classList.add(cls); }
 
 /* ---------------- critters ---------------- */
+// Each critter has 3 forms: Baby (hatches), Junior (Level 5), Super (Level 10).
+const C = (id, r, names, body, belly, shape, ears, eyes, extra, grow, more = {}) =>
+  ({ id, r, names, name: names[1], body, belly, shape, ears, eyes, extra, grow, ...more });
 const CRITTERS = [
-  { id:'puff',    name:'Puff',       r:'common', body:'#ff9ecb', belly:'#ffe0ee', shape:'round', ears:'cat',     eyes:2, extra:'none' },
-  { id:'mossy',   name:'Mossy',      r:'common', body:'#7ed957', belly:'#dcf8cb', shape:'round', ears:'leaf',    eyes:2, extra:'spots' },
-  { id:'bloop',   name:'Bloop',      r:'common', body:'#5ab8ff', belly:'#d3ecff', shape:'wide',  ears:'antenna', eyes:1, extra:'none' },
-  { id:'nibbles', name:'Nibbles',    r:'common', body:'#ffad5c', belly:'#ffe6c9', shape:'round', ears:'bunny',   eyes:2, extra:'none' },
-  { id:'tiko',    name:'Tiko',       r:'common', body:'#ffd84d', belly:'#fff3c2', shape:'tall',  ears:'round',   eyes:2, extra:'spots' },
-  { id:'gumdrop', name:'Gumdrop',    r:'common', body:'#b48cff', belly:'#ebe0ff', shape:'round', ears:'horns',   eyes:2, extra:'none' },
-  { id:'pebble',  name:'Pebble',     r:'common', body:'#8fa7c7', belly:'#e1e9f5', shape:'wide',  ears:'round',   eyes:2, extra:'stripes' },
-  { id:'fizz',    name:'Fizz',       r:'common', body:'#3fd1c2', belly:'#cdf7f2', shape:'tall',  ears:'antenna', eyes:3, extra:'none' },
-  { id:'waffles', name:'Waffles',    r:'common', body:'#d9a066', belly:'#f6e3cc', shape:'wide',  ears:'cat',     eyes:2, extra:'spots' },
-  { id:'snoot',   name:'Snoot',      r:'common', body:'#ff8080', belly:'#ffdada', shape:'tall',  ears:'bunny',   eyes:2, extra:'tail' },
-  { id:'zippy',   name:'Zippy',      r:'rare',   body:'#b6e35a', belly:'#eefbd0', shape:'round', ears:'antenna', eyes:2, extra:'wings' },
-  { id:'marsh',   name:'Marshmallow',r:'rare',   body:'#efe4ff', belly:'#ffffff', shape:'tall',  ears:'bunny',   eyes:2, extra:'wings' },
-  { id:'ember',   name:'Ember',      r:'rare',   body:'#ff6b3d', belly:'#ffd2a8', shape:'round', ears:'horns',   eyes:2, extra:'tail' },
-  { id:'glim',    name:'Glim',       r:'rare',   body:'#55e0ff', belly:'#d6f8ff', shape:'round', ears:'none',    eyes:1, extra:'wings' },
-  { id:'coco',    name:'Coco',       r:'rare',   body:'#6ee0b0', belly:'#d8fbe9', shape:'wide',  ears:'cat',     eyes:3, extra:'stripes' },
-  { id:'belle',   name:'Berrybelle', r:'rare',   body:'#d65db1', belly:'#f9d3ec', shape:'round', ears:'leaf',    eyes:2, extra:'spots' },
-  { id:'starla',  name:'Starla',     r:'legendary', body:'#ffcf33', belly:'#fff6cc', shape:'tall',  ears:'cat',     eyes:2, extra:'wings', crown:true },
-  { id:'cosmo',   name:'Cosmo',      r:'legendary', body:'#4b3fb5', belly:'#8f86e8', shape:'round', ears:'antenna', eyes:3, extra:'stars', crown:true },
+  C('puff',    'common', ['Puffkin', 'Puff', 'Puffaroo'],          '#ff9ecb', '#ffe0ee', 'round', 'cat',      2, 'none',     'mane'),
+  C('mossy',   'common', ['Mossling', 'Mossy', 'Mossaurus'],       '#7ed957', '#dcf8cb', 'round', 'leaf',     2, 'spots',    'horns'),
+  C('bloop',   'common', ['Blip', 'Bloop', 'Bloopiter'],           '#5ab8ff', '#d3ecff', 'wide',  'antenna',  1, 'none',     'aura'),
+  C('nibbles', 'common', ['Nib', 'Nibbles', 'Sir Nibbles'],        '#ffad5c', '#ffe6c9', 'round', 'bunny',    2, 'none',     'crown'),
+  C('tiko',    'common', ['Tik', 'Tiko', 'Tikorus'],               '#ffd84d', '#fff3c2', 'tall',  'round',    2, 'spots',    'bigtail'),
+  C('gumdrop', 'common', ['Gummy', 'Gumdrop', 'Gumdragon'],        '#b48cff', '#ebe0ff', 'round', 'horns',    2, 'none',     'wings'),
+  C('pebble',  'common', ['Pip', 'Pebble', 'Boulderon'],           '#8fa7c7', '#e1e9f5', 'wide',  'round',    2, 'stripes',  'horns'),
+  C('fizz',    'common', ['Fizzlet', 'Fizz', 'Fizzbang'],          '#3fd1c2', '#cdf7f2', 'tall',  'antenna',  3, 'none',     'aura'),
+  C('waffles', 'common', ['Waffy', 'Waffles', 'Grand Waffle'],     '#d9a066', '#f6e3cc', 'wide',  'cat',      2, 'spots',    'crown'),
+  C('snoot',   'common', ['Snootie', 'Snoot', 'Snootasaurus'],     '#ff8080', '#ffdada', 'tall',  'bunny',    2, 'tail',     'mane'),
+  C('pudding', 'common', ['Puddle', 'Pudding', 'Pudzilla'],        '#f2b84b', '#fff0cf', 'wide',  'droopy',   2, 'freckles', 'bigtail'),
+  C('sprig',   'common', ['Seedy', 'Sprig', 'Sprigantic'],         '#a8d84e', '#effad6', 'tall',  'sprout',   2, 'none',     'mane', { acc: '#5cae2e' }),
+  C('bubbles', 'common', ['Bub', 'Bubbles', 'Bubblefin'],          '#4fa3ff', '#d6ebff', 'wide',  'fin',      2, 'whiskers', 'wings', { wing: '#9fd0ff' }),
+  C('shroomy', 'common', ['Sporelet', 'Shroomy', 'Shroomzilla'],   '#f4e1c1', '#fff8ec', 'round', 'mushroom', 2, 'freckles', 'aura'),
+  C('hoot',    'common', ['Hootlet', 'Hoot', 'Hootington'],        '#9c7bd1', '#e8ddf8', 'round', 'tufts',    2, 'heart',    'wings'),
+  C('chomper', 'common', ['Chomplet', 'Chomper', 'Chompasaurus'],  '#5cc98a', '#d9f7e5', 'tall',  'spikes',   2, 'stripes',  'bigtail'),
+  C('zippy',   'rare',   ['Zip', 'Zippy', 'Zipzoom'],              '#b6e35a', '#eefbd0', 'round', 'antenna',  2, 'wings',    'aura'),
+  C('marsh',   'rare',   ['Mallow', 'Marshmallow', 'Marshmajesty'],'#efe4ff', '#ffffff', 'tall',  'bunny',    2, 'wings',    'crown'),
+  C('ember',   'rare',   ['Spark', 'Ember', 'Blazeon'],            '#ff6b3d', '#ffd2a8', 'round', 'horns',    2, 'tail',     'flame'),
+  C('glim',    'rare',   ['Glint', 'Glim', 'Glimmerra'],           '#55e0ff', '#d6f8ff', 'round', 'none',     1, 'wings',    'aura'),
+  C('coco',    'rare',   ['Cocobean', 'Coco', 'Coconova'],         '#6ee0b0', '#d8fbe9', 'wide',  'cat',      3, 'stripes',  'mane'),
+  C('belle',   'rare',   ['Berry', 'Berrybelle', 'Berryqueen'],    '#d65db1', '#f9d3ec', 'round', 'leaf',     2, 'spots',    'crown'),
+  C('sprinkle','rare',   ['Glitterbit', 'Sprinkle', 'Sprinklecorn'],'#ffc2e6', '#fff4fb', 'tall', 'horn',     2, 'heart',    'wings', { wing: '#e9dcff' }),
+  C('flurry',  'rare',   ['Flake', 'Flurry', 'Blizzara'],          '#a9dcff', '#ffffff', 'round', 'tufts',    2, 'gem',      'mane', { acc: '#e8f7ff' }),
+  C('ribbons', 'rare',   ['Bow', 'Ribbons', 'Ribbonetta'],         '#ffb4c8', '#fff0f4', 'round', 'bow',      2, 'heart',    'wings', { acc: '#7c5cff' }),
+  C('kitsu',   'rare',   ['Flick', 'Kitsu', 'Kitsunova'],          '#ff9a3c', '#fff1e0', 'tall',  'fox',      2, 'whiskers', 'flame'),
+  C('starla',  'legendary', ['Twinkle', 'Starla', 'Supernova'],    '#ffcf33', '#fff6cc', 'tall',  'cat',      2, 'wings',    'aura',  { crown: true }),
+  C('cosmo',   'legendary', ['Cosmite', 'Cosmo', 'Cosmonarch'],    '#4b3fb5', '#8f86e8', 'round', 'antenna',  3, 'stars',    'wings', { crown: true, wing: '#c9c2ff' }),
+  C('aurora',  'legendary', ['Dawnling', 'Aurora', 'Aurorix'],     '#3fd1a8', '#d4fff1', 'tall',  'horn',     2, 'stars',    'aura',  { crown: true }),
+  C('drako',   'legendary', ['Dragling', 'Drako', 'Drakonis'],     '#e0446a', '#ffd0dc', 'round', 'horns',    2, 'tail',     'wings', { crown: true, wing: '#ffb3c6' }),
 ];
 const RARITY_COLOR = { common:'var(--blue)', rare:'var(--pink)', legendary:'#ffb300' };
+const RARITY_LABEL = { common:'Common', rare:'Rare', legendary:'✨ Legendary' };
+const STAGE_NAME = ['Baby', 'Junior', 'Super'];
 const byId = id => CRITTERS.find(c => c.id === id);
 
+/* ---------------- levels & evolving ---------------- */
+const MAX_LV = 10, EVO_LV = [5, 10];
+const SPEED = { fast: 0.6, normal: 1, slow: 1.5 };
+const lvNeed = L => Math.round((8 + 4 * (L - 1)) * (SPEED[S.settings.speed] || 1));
+const stageOf = id => (S.critters[id] ? S.critters[id].stage : 1);
+const nameOf = id => byId(id).names[stageOf(id)];
+function giveXP(id, n) {
+  const c = S.critters[id]; let ups = 0;
+  c.xp += n;
+  while (c.lv < MAX_LV && c.xp >= lvNeed(c.lv)) { c.xp -= lvNeed(c.lv); c.lv++; ups++; }
+  if (c.lv >= MAX_LV) c.xp = 0;
+  return ups;
+}
+function canEvolve(id) { const c = S.critters[id]; return !!c && c.stage < 2 && c.lv >= EVO_LV[c.stage]; }
+function fillXp(left, right, fill, me) {
+  const ready = canEvolve(Object.keys(S.critters).find(k => S.critters[k] === me));
+  $(left).textContent = `Level ${me.lv}`;
+  if (ready) { $(right).textContent = '✨ Ready to evolve!'; $(fill).style.width = '100%'; }
+  else if (me.lv >= MAX_LV) { $(right).textContent = '⭐ All grown up'; $(fill).style.width = '100%'; }
+  else { $(right).textContent = `${me.xp} / ${lvNeed(me.lv)} 🫐 to Level ${me.lv + 1}`; $(fill).style.width = (me.xp / lvNeed(me.lv) * 100) + '%'; }
+}
+
+/* ---------------- drawing critters ---------------- */
 function shade(hex, amt) {
   const n = parseInt(hex.slice(1), 16);
   let r = n >> 16, g = (n >> 8) & 255, b = n & 255;
@@ -538,81 +667,158 @@ function shade(hex, amt) {
   r = Math.round((t - r) * p + r); g = Math.round((t - g) * p + g); b = Math.round((t - b) * p + b);
   return '#' + ((1 << 24) | (r << 16) | (g << 8) | b).toString(16).slice(1);
 }
+const sparkle = (x, y, r, col) => `<path d="M${x} ${y-r} L${x+r*.3} ${y-r*.3} L${x+r} ${y} L${x+r*.3} ${y+r*.3} L${x} ${y+r} L${x-r*.3} ${y+r*.3} L${x-r} ${y} L${x-r*.3} ${y-r*.3} Z" fill="${col}"/>`;
+const f1 = n => Math.round(n * 10) / 10;
+const SHAPES = { round:{cy:72,rx:38,ry:36}, tall:{cy:70,rx:31,ry:42}, wide:{cy:76,rx:45,ry:31} };
+const FRONT_EARS = ['droopy', 'mushroom', 'bow'];
 
-function critterSVG(c, { mood = 'happy', sil = false } = {}) {
-  const B = sil ? '#d6cfe8' : c.body, L = sil ? '#d6cfe8' : c.belly, O = sil ? '#bdb3d8' : shade(c.body, -0.28);
-  const D = '#2b2340';
-  const sh = { round:{cy:72,rx:38,ry:36}, tall:{cy:70,rx:31,ry:42}, wide:{cy:76,rx:45,ry:31} }[c.shape];
-  const cy = sh.cy, ty = cy - sh.ry;
-  let p = '';
-  // wings (behind)
-  if (c.extra === 'wings') {
-    const wl = 60 - sh.rx + 2, wr = 60 + sh.rx - 2, wy = cy - 10, wf = sil ? B : '#ffffff';
-    p += `<ellipse cx="${wl-8}" cy="${wy}" rx="16" ry="25" transform="rotate(-28 ${wl-8} ${wy})" fill="${wf}" stroke="${O}" stroke-width="3"/>`;
-    p += `<ellipse cx="${wr+8}" cy="${wy}" rx="16" ry="25" transform="rotate(28 ${wr+8} ${wy})" fill="${wf}" stroke="${O}" stroke-width="3"/>`;
+function critterSVG(c, { mood = 'happy', sil = false, stage = 1 } = {}) {
+  const baby = stage === 0, big = stage === 2, D = '#2b2340';
+  const B = sil ? '#d6cfe8' : (baby ? shade(c.body, 0.2) : c.body);
+  const L = sil ? '#d6cfe8' : c.belly;
+  const O = sil ? '#bdb3d8' : shade(c.body, big ? -0.36 : -0.28);
+  const A = sil ? '#c9c0e0' : (c.acc || shade(c.body, -0.16));
+  const W = sil ? '#e2dcf0' : (c.wing || '#ffffff');
+  const base = SHAPES[c.shape];
+  const sh = big ? { cy: base.cy - 3, rx: base.rx * 1.07, ry: base.ry * 1.06 } : base;
+  const cy = sh.cy, ty = cy - sh.ry, bot = cy + sh.ry;
+  const st = `stroke="${O}" stroke-width="3" stroke-linejoin="round"`;
+  const grow = big ? c.grow : null;
+  let back = '', p = '';
+
+  // ---- behind the body: aura, mane, wings, tails, big horns, flame
+  if (grow === 'aura') {
+    const g = sil ? '#e2dcf0' : '#fff6a8';
+    back += `<circle cx="60" cy="${cy}" r="${f1(sh.ry + 24)}" fill="${g}" opacity=".35"/><circle cx="60" cy="${cy}" r="${f1(sh.ry + 13)}" fill="${g}" opacity=".55"/>`;
+    if (!sil) back += [[8, cy - 30, 6], [112, cy - 22, 7], [10, cy + 28, 5], [110, cy + 30, 6], [60, ty - 24, 5]].map(([x, y, r]) => sparkle(x, y, r, '#ffb300')).join('');
   }
-  // tail (behind)
-  if (c.extra === 'tail') {
-    const tx = 60 + sh.rx - 8, tyy = cy + 14;
+  if (grow === 'mane') {
+    const mx = 60, my = cy - sh.ry * 0.2, R = Math.max(sh.rx, sh.ry) * 0.92, d = 13 * Math.PI / 180;
+    for (let a = 165; a <= 376; a += 21) {
+      const t = a * Math.PI / 180;
+      const pt = (ang, rr) => `${f1(mx + Math.cos(ang) * rr)} ${f1(my + Math.sin(ang) * rr)}`;
+      back += `<path d="M${pt(t - d, R)} L${pt(t, R + 18)} L${pt(t + d, R)} Z" fill="${A}" ${st}/>`;
+    }
+  }
+  if (c.extra === 'wings' && !baby && grow !== 'wings') {
+    const wl = 60 - sh.rx + 2, wr = 60 + sh.rx - 2, wy = cy - 10;
+    back += `<ellipse cx="${f1(wl - 8)}" cy="${wy}" rx="16" ry="25" transform="rotate(-28 ${f1(wl - 8)} ${wy})" fill="${W}" ${st}/>`;
+    back += `<ellipse cx="${f1(wr + 8)}" cy="${wy}" rx="16" ry="25" transform="rotate(28 ${f1(wr + 8)} ${wy})" fill="${W}" ${st}/>`;
+  }
+  if (grow === 'wings') {
+    [-1, 1].forEach(s => {
+      const px = f1(60 + s * sh.rx * 0.5), py = cy - 6;
+      [80, 54, 28].forEach((ang, i) => { back += `<ellipse cx="${px}" cy="${py - 24}" rx="${12 - i}" ry="${25 - i * 2}" transform="rotate(${s * ang} ${px} ${py})" fill="${W}" ${st}/>`; });
+    });
+  }
+  const tx = f1(60 + sh.rx - 8), tyy = cy + 14;
+  if (c.extra === 'tail' && !baby && grow !== 'bigtail') {
     const d = `M${tx} ${tyy} q 24 6 22 -16 q -1 -10 8 -14`;
-    p += `<path d="${d}" fill="none" stroke="${O}" stroke-width="13" stroke-linecap="round"/>`;
-    p += `<path d="${d}" fill="none" stroke="${B}" stroke-width="7" stroke-linecap="round"/>`;
+    back += `<path d="${d}" fill="none" stroke="${O}" stroke-width="13" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${B}" stroke-width="7" stroke-linecap="round"/>`;
   }
-  // ears
-  const ears = {
-    cat: () => `<path d="M38 ${ty+16} L34 ${ty-12} L57 ${ty+4} Z" fill="${B}" stroke="${O}" stroke-width="3" stroke-linejoin="round"/>
-                <path d="M82 ${ty+16} L86 ${ty-12} L63 ${ty+4} Z" fill="${B}" stroke="${O}" stroke-width="3" stroke-linejoin="round"/>
+  if (grow === 'bigtail') {
+    const d = `M${tx} ${tyy} q 28 6 26 -22 q -2 -12 10 -18`;
+    back += `<path d="${d}" fill="none" stroke="${O}" stroke-width="19" stroke-linecap="round"/><path d="${d}" fill="none" stroke="${B}" stroke-width="13" stroke-linecap="round"/><circle cx="${f1(+tx + 36)}" cy="${tyy - 40}" r="10" fill="${L}" ${st}/>`;
+  }
+  if (grow === 'horns') {
+    [-1, 1].forEach(s => {
+      const x = f1(60 + s * sh.rx * 0.42);
+      back += `<path d="M${x} ${ty + 12} q ${s * 26} -4 ${s * 28} -30 q ${-s * 4} 18 ${-s * 16} 22 Z" fill="${sil ? B : '#fff3c4'}" stroke="${sil ? O : '#d9b45a'}" stroke-width="3" stroke-linejoin="round"/>`;
+    });
+  }
+  if (grow === 'flame') {
+    const fl = (k, col, line) => `<path d="M60 ${ty + 8} C ${f1(60 - 18 * k)} ${ty - 2} ${f1(60 - 10 * k)} ${f1(ty - 22 * k)} ${f1(60 - 4 * k)} ${f1(ty - 30 * k)} C 60 ${f1(ty - 20 * k)} ${f1(60 + 6 * k)} ${f1(ty - 24 * k)} ${f1(60 + 4 * k)} ${f1(ty - 38 * k)} C ${f1(60 + 18 * k)} ${f1(ty - 24 * k)} ${f1(60 + 20 * k)} ${ty - 4} 60 ${ty + 8} Z" fill="${col}" ${line ? st : ''}/>`;
+    back += fl(1, sil ? B : '#ff9636', true) + (sil ? '' : fl(0.62, '#ffd23f', false));
+  }
+
+  // ---- ears & head toppers
+  const EARS = {
+    cat: () => `<path d="M38 ${ty+16} L34 ${ty-12} L57 ${ty+4} Z" fill="${B}" ${st}/><path d="M82 ${ty+16} L86 ${ty-12} L63 ${ty+4} Z" fill="${B}" ${st}/>
                 <path d="M40 ${ty+10} L38 ${ty-4} L50 ${ty+4} Z" fill="${L}"/><path d="M80 ${ty+10} L82 ${ty-4} L70 ${ty+4} Z" fill="${L}"/>`,
-    bunny: () => `<g transform="rotate(-12 46 ${ty-8})"><ellipse cx="46" cy="${ty-8}" rx="8.5" ry="21" fill="${B}" stroke="${O}" stroke-width="3"/><ellipse cx="46" cy="${ty-6}" rx="4" ry="14" fill="${L}"/></g>
-                  <g transform="rotate(12 74 ${ty-8})"><ellipse cx="74" cy="${ty-8}" rx="8.5" ry="21" fill="${B}" stroke="${O}" stroke-width="3"/><ellipse cx="74" cy="${ty-6}" rx="4" ry="14" fill="${L}"/></g>`,
-    round: () => `<circle cx="37" cy="${ty+8}" r="12" fill="${B}" stroke="${O}" stroke-width="3"/><circle cx="37" cy="${ty+8}" r="6" fill="${L}"/>
-                  <circle cx="83" cy="${ty+8}" r="12" fill="${B}" stroke="${O}" stroke-width="3"/><circle cx="83" cy="${ty+8}" r="6" fill="${L}"/>`,
+    fox: () => `<path d="M38 ${ty+16} L32 ${ty-18} L57 ${ty+4} Z" fill="${B}" ${st}/><path d="M82 ${ty+16} L88 ${ty-18} L63 ${ty+4} Z" fill="${B}" ${st}/>
+                <path d="M32 ${ty-18} L33.8 ${ty-7.8} L39.5 ${ty-11.4} Z" fill="${sil ? O : '#5a3a2e'}"/><path d="M88 ${ty-18} L86.2 ${ty-7.8} L80.5 ${ty-11.4} Z" fill="${sil ? O : '#5a3a2e'}"/>
+                <path d="M40 ${ty+10} L37 ${ty-4} L50 ${ty+4} Z" fill="${L}"/><path d="M80 ${ty+10} L83 ${ty-4} L70 ${ty+4} Z" fill="${L}"/>`,
+    bunny: () => `<g transform="rotate(-12 46 ${ty-8})"><ellipse cx="46" cy="${ty-8}" rx="8.5" ry="21" fill="${B}" ${st}/><ellipse cx="46" cy="${ty-6}" rx="4" ry="14" fill="${L}"/></g>
+                  <g transform="rotate(12 74 ${ty-8})"><ellipse cx="74" cy="${ty-8}" rx="8.5" ry="21" fill="${B}" ${st}/><ellipse cx="74" cy="${ty-6}" rx="4" ry="14" fill="${L}"/></g>`,
+    round: () => `<circle cx="37" cy="${ty+8}" r="12" fill="${B}" ${st}/><circle cx="37" cy="${ty+8}" r="6" fill="${L}"/>
+                  <circle cx="83" cy="${ty+8}" r="12" fill="${B}" ${st}/><circle cx="83" cy="${ty+8}" r="6" fill="${L}"/>`,
     horns: () => `<path d="M44 ${ty+8} q -8 -14 -4 -22 q 6 8 13 19 Z" fill="${sil?B:'#fff3c4'}" stroke="${sil?O:'#d9b45a'}" stroke-width="3" stroke-linejoin="round"/>
                   <path d="M76 ${ty+8} q 8 -14 4 -22 q -6 8 -13 19 Z" fill="${sil?B:'#fff3c4'}" stroke="${sil?O:'#d9b45a'}" stroke-width="3" stroke-linejoin="round"/>`,
-    antenna: () => `<path d="M50 ${ty+6} Q 46 ${ty-6} 41 ${ty-15}" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="40" cy="${ty-18}" r="5.5" fill="${L}" stroke="${O}" stroke-width="3"/>
-                    <path d="M70 ${ty+6} Q 74 ${ty-6} 79 ${ty-15}" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="80" cy="${ty-18}" r="5.5" fill="${L}" stroke="${O}" stroke-width="3"/>`,
+    antenna: () => `<path d="M50 ${ty+6} Q 46 ${ty-6} 41 ${ty-15}" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="40" cy="${ty-18}" r="5.5" fill="${L}" ${st}/>
+                    <path d="M70 ${ty+6} Q 74 ${ty-6} 79 ${ty-15}" stroke="${O}" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="80" cy="${ty-18}" r="5.5" fill="${L}" ${st}/>`,
     leaf: () => `<path d="M60 ${ty+3} q -1 -8 2 -12" stroke="${sil?O:'#3d9a32'}" stroke-width="3" fill="none" stroke-linecap="round"/>
                  <path d="M62 ${ty-8} q 4 -14 20 -14 q -4 16 -20 14 Z" fill="${sil?B:'#5cc54a'}" stroke="${sil?O:'#3d9a32'}" stroke-width="2.5" stroke-linejoin="round"/>`,
+    sprout: () => `<path d="M60 ${ty+4} q 1 -10 0 -16" stroke="${sil?O:'#3d9a32'}" stroke-width="3" fill="none" stroke-linecap="round"/>
+                   <path d="M60 ${ty-10} q -14 -12 -22 -2 q 10 8 22 2 Z" fill="${sil?B:'#5cc54a'}" stroke="${sil?O:'#3d9a32'}" stroke-width="2.5" stroke-linejoin="round"/>
+                   <path d="M60 ${ty-10} q 14 -12 22 -2 q -10 8 -22 2 Z" fill="${sil?B:'#5cc54a'}" stroke="${sil?O:'#3d9a32'}" stroke-width="2.5" stroke-linejoin="round"/>`,
+    fin: () => `<path d="M46 ${ty+8} Q 52 ${ty-26} 78 ${ty-10} Q 72 ${ty} 74 ${ty+8} Z" fill="${A}" ${st}/><path d="M56 ${ty+2} L58 ${ty-12} M64 ${ty+2} L67 ${ty-12}" stroke="${O}" stroke-width="2" stroke-linecap="round"/>`,
+    tufts: () => `<path d="M36 ${ty+16} L26 ${ty-8} L52 ${ty+5} Z" fill="${A}" ${st}/><path d="M84 ${ty+16} L94 ${ty-8} L68 ${ty+5} Z" fill="${A}" ${st}/>`,
+    spikes: () => [[44, 14], [60, 20], [76, 14]].map(([x, h]) => `<path d="M${x-9} ${ty+7} L${x} ${ty-h} L${x+9} ${ty+7} Z" fill="${A}" ${st}/>`).join(''),
+    horn: () => `<path d="M53 ${ty+6} L60 ${ty-26} L67 ${ty+6} Z" fill="${sil?B:'#fff3c4'}" stroke="${sil?O:'#d9b45a'}" stroke-width="3" stroke-linejoin="round"/>
+                 ${sil ? '' : `<path d="M55.5 ${ty-2} L65 ${ty-5} M57.5 ${ty-11} L63 ${ty-13}" stroke="#d9b45a" stroke-width="2" stroke-linecap="round"/>`}`,
+    droopy: () => [-1, 1].map(s => { const x = f1(60 + s * sh.rx * 0.9); return `<ellipse cx="${x}" cy="${ty+24}" rx="9" ry="20" transform="rotate(${s * -16} ${x} ${ty+24})" fill="${A}" ${st}/>`; }).join(''),
+    mushroom: () => `<path d="M${f1(60-sh.rx-8)} ${ty+22} Q ${f1(60-sh.rx-6)} ${ty-22} 60 ${ty-22} Q ${f1(60+sh.rx+6)} ${ty-22} ${f1(60+sh.rx+8)} ${ty+22} Q 60 ${ty+10} ${f1(60-sh.rx-8)} ${ty+22} Z" fill="${sil?B:'#ff5a5f'}" ${st}/>
+                     ${sil ? '' : `<circle cx="44" cy="${ty-4}" r="5" fill="#fff"/><circle cx="64" cy="${ty-12}" r="6" fill="#fff"/><circle cx="80" cy="${ty+4}" r="4.5" fill="#fff"/><circle cx="${f1(60-sh.rx+2)}" cy="${ty+12}" r="3.5" fill="#fff"/>`}`,
+    bow: () => `<path d="M72 ${ty+6} q 14 -16 20 -2 q -4 12 -20 2 Z" fill="${A}" ${st}/><path d="M72 ${ty+6} q -14 -16 -20 -2 q 4 12 20 2 Z" fill="${A}" ${st}/><circle cx="72" cy="${ty+6}" r="4.5" fill="${A}" ${st}/>`,
     none: () => ''
   };
-  p += ears[c.ears]();
-  // feet
-  p += `<ellipse cx="45" cy="${cy+sh.ry-3}" rx="11" ry="7" fill="${O}"/><ellipse cx="75" cy="${cy+sh.ry-3}" rx="11" ry="7" fill="${O}"/>`;
-  // body + belly
-  p += `<ellipse cx="60" cy="${cy}" rx="${sh.rx}" ry="${sh.ry}" fill="${B}" stroke="${O}" stroke-width="3"/>`;
-  p += `<ellipse cx="60" cy="${cy + sh.ry*0.38}" rx="${sh.rx*0.62}" ry="${sh.ry*0.48}" fill="${L}"/>`;
-  // patterns
+  const earScale = baby ? 0.78 : big ? 1.18 : 1;
+  const ears = earScale === 1 ? EARS[c.ears]() : `<g transform="translate(60 ${ty + 12}) scale(${earScale}) translate(-60 ${-(ty + 12)})">${EARS[c.ears]()}</g>`;
+  const frontEars = FRONT_EARS.includes(c.ears);
+
+  p += back;
+  if (!frontEars) p += ears;
+  // feet, body, belly
+  p += `<ellipse cx="45" cy="${f1(bot-3)}" rx="11" ry="7" fill="${O}"/><ellipse cx="75" cy="${f1(bot-3)}" rx="11" ry="7" fill="${O}"/>`;
+  p += `<ellipse cx="60" cy="${cy}" rx="${f1(sh.rx)}" ry="${f1(sh.ry)}" fill="${B}" ${st}/>`;
+  p += `<ellipse cx="60" cy="${f1(cy + sh.ry*0.38)}" rx="${f1(sh.rx*0.62)}" ry="${f1(sh.ry*0.48)}" fill="${L}"/>`;
+  // body patterns
   if (!sil) {
     const pc = shade(c.body, -0.13);
-    if (c.extra === 'spots') p += `<circle cx="${60-sh.rx*0.68}" cy="${cy-6}" r="5" fill="${pc}"/><circle cx="${60+sh.rx*0.7}" cy="${cy}" r="4.2" fill="${pc}"/><circle cx="${60-sh.rx*0.55}" cy="${cy+12}" r="3" fill="${pc}"/><circle cx="${60+sh.rx*0.5}" cy="${cy-sh.ry*0.62}" r="3.4" fill="${pc}"/>`;
-    if (c.extra === 'stripes') p += [0,1].map(i => `<path d="M48 ${ty+5+i*6} q 12 ${5} 24 0" stroke="${pc}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`).join('');
-    if (c.extra === 'stars') p += [[34,cy-6],[86,cy+2],[40,cy+16],[80,cy-20],[60,ty+6]].map(([x,y]) => `<path d="M${x} ${y-4} L${x+1.2} ${y-1.2} L${x+4} ${y} L${x+1.2} ${y+1.2} L${x} ${y+4} L${x-1.2} ${y+1.2} L${x-4} ${y} L${x-1.2} ${y-1.2} Z" fill="#fff6a8"/>`).join('');
+    if (c.extra === 'spots') p += `<circle cx="${f1(60-sh.rx*0.68)}" cy="${cy-6}" r="5" fill="${pc}"/><circle cx="${f1(60+sh.rx*0.7)}" cy="${cy}" r="4.2" fill="${pc}"/><circle cx="${f1(60-sh.rx*0.55)}" cy="${cy+12}" r="3" fill="${pc}"/><circle cx="${f1(60+sh.rx*0.5)}" cy="${f1(cy-sh.ry*0.62)}" r="3.4" fill="${pc}"/>`;
+    if (c.extra === 'stripes') p += [0, 1].map(i => `<path d="M48 ${ty+5+i*6} q 12 5 24 0" stroke="${pc}" stroke-width="3.5" fill="none" stroke-linecap="round"/>`).join('');
+    if (c.extra === 'stars') p += [[34,cy-6],[86,cy+2],[40,cy+16],[80,cy-20],[60,ty+6]].map(([x,y]) => sparkle(x, y, 4, '#fff6a8')).join('');
+    if (c.extra === 'heart') { const y = f1(cy + sh.ry * 0.42); p += `<path d="M60 ${y+6} C 49 ${y-2} 52 ${y-10} 60 ${y-4} C 68 ${y-10} 71 ${y-2} 60 ${y+6} Z" fill="#ff6fae" opacity=".85"/>`; }
+    if (c.extra === 'gem' && !baby) p += `<path d="M60 ${ty+5} L66 ${ty+12} L60 ${ty+19} L54 ${ty+12} Z" fill="#55e0ff" stroke="#2479c4" stroke-width="1.5"/>`;
   }
+  if (frontEars) p += ears;
   // face
   if (sil) {
     p += `<text x="60" y="${cy+12}" text-anchor="middle" font-size="36" font-weight="800" fill="#fff" font-family="Baloo 2, sans-serif">?</text>`;
   } else {
-    const ey = cy - sh.ry * 0.22;
+    const ey = f1(cy - sh.ry * 0.22), k = baby ? 1.22 : 1;
     const eyes = c.eyes === 1 ? [{x:60,y:ey,r:13}] : c.eyes === 3 ? [{x:44,y:ey,r:7},{x:60,y:ey-7,r:7.5},{x:76,y:ey,r:7}] : [{x:47,y:ey,r:9},{x:73,y:ey,r:9}];
     eyes.forEach(e => {
+      const r = e.r * k;
       if (mood === 'yay') {
-        p += `<path d="M${e.x-e.r*0.8} ${e.y+2} q ${e.r*0.8} ${-e.r*1.1} ${e.r*1.6} 0" stroke="${D}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
+        p += `<path d="M${f1(e.x-r*0.8)} ${f1(e.y+2)} q ${f1(r*0.8)} ${f1(-r*1.1)} ${f1(r*1.6)} 0" stroke="${D}" stroke-width="3.2" fill="none" stroke-linecap="round"/>`;
       } else {
-        p += `<circle cx="${e.x}" cy="${e.y}" r="${e.r}" fill="#fff"/>`;
-        const py = mood === 'hmm' ? e.y - e.r*0.25 : e.y + 1;
-        p += `<circle cx="${e.x + 1}" cy="${py}" r="${e.r*0.6}" fill="${D}"/><circle cx="${e.x - e.r*0.12 + 1}" cy="${py - e.r*0.25}" r="${e.r*0.22}" fill="#fff"/>`;
+        p += `<circle cx="${e.x}" cy="${e.y}" r="${f1(r)}" fill="#fff"/>`;
+        const py = mood === 'hmm' ? e.y - r*0.25 : e.y + 1;
+        p += `<circle cx="${e.x + 1}" cy="${f1(py)}" r="${f1(r*0.6)}" fill="${D}"/><circle cx="${f1(e.x - r*0.12 + 1)}" cy="${f1(py - r*0.25)}" r="${f1(r*0.22)}" fill="#fff"/>`;
+        if (baby) p += `<circle cx="${f1(e.x + r*0.25 + 1)}" cy="${f1(py + r*0.2)}" r="${f1(r*0.1)}" fill="#fff"/>`;
       }
+      if (big && mood !== 'hmm') p += `<path d="M${f1(e.x-r*0.8)} ${f1(e.y-r-5)} q ${f1(r*0.8)} -4 ${f1(r*1.6)} 0" stroke="${D}" stroke-width="2.6" fill="none" stroke-linecap="round"/>`;
     });
     const my = ey + (c.eyes === 1 ? 20 : 15);
     if (mood === 'yay') p += `<path d="M51 ${my-1} q 9 13 18 0 Z" fill="${D}"/><path d="M55 ${my+4} q 5 4 10 0" fill="#ff7a9c"/>`;
     else if (mood === 'hmm') p += `<path d="M54 ${my+3} q 6 -4 12 0" stroke="${D}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
     else p += `<path d="M53 ${my} q 7 7 14 0" stroke="${D}" stroke-width="3" fill="none" stroke-linecap="round"/>`;
-    p += `<ellipse cx="${60-sh.rx*0.58}" cy="${my-1}" rx="6" ry="3.5" fill="#ff8fb1" opacity=".5"/><ellipse cx="${60+sh.rx*0.58}" cy="${my-1}" rx="6" ry="3.5" fill="#ff8fb1" opacity=".5"/>`;
+    p += `<ellipse cx="${f1(60-sh.rx*0.58)}" cy="${my-1}" rx="6" ry="3.5" fill="#ff8fb1" opacity=".5"/><ellipse cx="${f1(60+sh.rx*0.58)}" cy="${my-1}" rx="6" ry="3.5" fill="#ff8fb1" opacity=".5"/>`;
+    if (c.extra === 'freckles') [-1, 1].forEach(s => { const x = 60 + s * sh.rx * 0.58; p += [[-3, -5], [2, -6], [0, -2]].map(([dx, dy]) => `<circle cx="${f1(x + dx)}" cy="${my + dy}" r="1.3" fill="${shade(c.body, -0.4)}"/>`).join(''); });
+    if (c.extra === 'whiskers') [-1, 1].forEach(s => { const x = 60 + s * sh.rx * 0.5; p += [-3, 2].map(dy => `<path d="M${f1(x)} ${my + dy} l ${s * 16} ${dy * 1.5}" stroke="${shade(c.body, -0.4)}" stroke-width="1.6" stroke-linecap="round"/>`).join(''); });
   }
-  if (c.crown && !sil) {
-    p += `<path d="M47 ${ty+3} L46 ${ty-13} L54 ${ty-5} L60 ${ty-17} L66 ${ty-5} L74 ${ty-13} L73 ${ty+3} Z" fill="#ffd23f" stroke="#d99a00" stroke-width="2.5" stroke-linejoin="round"/><circle cx="60" cy="${ty-3}" r="2.5" fill="#ff6fae"/>`;
+  // things on top of the head
+  if ((c.crown && !baby) || grow === 'crown') {
+    const cyy = c.ears === 'bunny' || c.ears === 'horn' ? ty + 4 : ty + 3;
+    p += `<path d="M47 ${cyy} L46 ${cyy-16} L54 ${cyy-8} L60 ${cyy-20} L66 ${cyy-8} L74 ${cyy-16} L73 ${cyy} Z" fill="${sil ? B : '#ffd23f'}" stroke="${sil ? O : '#d99a00'}" stroke-width="2.5" stroke-linejoin="round"/>${sil ? '' : `<circle cx="60" cy="${cyy-6}" r="2.5" fill="#ff6fae"/>`}`;
   }
-  return `<svg class="critter" viewBox="0 -14 120 132" aria-hidden="true">${p}</svg>`;
+  if (baby) {
+    p += `<g transform="translate(60 ${ty}) rotate(-16) scale(.62) translate(-60 ${-ty})"><path d="M44 ${ty+6} Q 44 ${ty-14} 60 ${ty-14} Q 76 ${ty-14} 76 ${ty+6} L 70 ${ty+1} L 65 ${ty+7} L 60 ${ty+1} L 55 ${ty+7} L 50 ${ty+1} Z" fill="${sil ? B : '#fff4dc'}" stroke="${sil ? O : '#e8c98f'}" stroke-width="2.5" stroke-linejoin="round"/>`;
+    p += sil ? '</g>' : `<circle cx="54" cy="${ty-6}" r="3" fill="#ffb3d1"/><circle cx="66" cy="${ty-3}" r="2.5" fill="#a9e4ff"/></g>`;
+    p = `<g transform="translate(60 ${f1(bot + 5)}) scale(.82) translate(-60 ${f1(-(bot + 5))})">${p}</g>`;
+  }
+  return `<svg class="critter" viewBox="-8 -30 136 152" aria-hidden="true">${p}</svg>`;
 }
 
 function eggSVG(stage = 0) {
@@ -744,6 +950,8 @@ function show(id) {
   current = id; window.scrollTo(0, 0);
   if (id === 'home') renderHome();
   if (id === 'collection') renderCollection();
+  if (id === 'feed') renderFeed();
+  if (id === 'detail') renderDetail();
   if (id === 'parent') renderParent();
 }
 document.addEventListener('click', e => {
@@ -752,32 +960,51 @@ document.addEventListener('click', e => {
 });
 
 /* ---------------- home ---------------- */
-const CHEERS = ['Let\'s do math!', 'You got this!', 'Berries please!', 'I believe in you!', 'Hi friend!', 'Math is fun!', 'Wheee!'];
+const CHEERS = ['Let\'s do math!', 'You got this!', 'Berries please!', 'I believe in you!', 'Hi friend!', 'Math is fun!', 'Wheee!', 'Yum, berries!'];
+const eggPrice = () => S.settings.eggPrice;
 function renderHome() {
   const st = currentStreak();
   $('#streak').textContent = st ? `🔥 ${st} day${st > 1 ? 's' : ''} in a row` : '👋 Welcome!';
-  $('#homeEggs').textContent = `🥚 ${S.eggs}`;
-  const b = S.buddy && byId(S.buddy);
-  $('#homeBuddySvg').innerHTML = b ? critterSVG(b) : eggSVG(0);
-  $('#buddyName').textContent = b ? `${b.name} ${'★'.repeat(Math.min(S.collection[b.id] || 1, 5))}` : 'Hatch your first critter!';
-  const per = S.settings.perEgg;
-  $('#berryText').textContent = `${S.berries} / ${per} to your next egg`;
-  $('#berryFill').style.width = (S.berries / per * 100) + '%';
+  $('#homeBerries').textContent = `🫐 ${S.berries}`;
+  const b = S.buddy && byId(S.buddy), me = b && S.critters[b.id];
+  const ready = !!(b && canEvolve(b.id));
+  $('#homeBuddySvg').innerHTML = b ? critterSVG(b, { stage: me.stage }) : eggSVG(0);
+  $('#homeBuddy').classList.toggle('glow', ready);
+  $('#buddyName').textContent = b ? b.names[me.stage] : 'Hatch your first critter!';
+  $('#buddySub').textContent = b ? `${STAGE_NAME[me.stage]} form · Level ${me.lv}` : '';
+  $('#homeXp').classList.toggle('hidden', !b);
+  if (b) fillXp('#xpLeft', '#xpRight', '#xpFill', me);
   const hb = $('#hatchBtn');
   hb.classList.toggle('hidden', S.eggs <= 0);
   hb.textContent = S.eggs === 1 ? '🥚 You have an egg! Tap to hatch' : `🥚 You have ${S.eggs} eggs! Tap to hatch`;
+  const nm = b ? b.names[me.stage] : 'buddy', price = eggPrice();
+  let acts = '';
+  if (ready) acts += `<button class="btn evolve pulse" data-act="evolve">✨ ${nm} is ready to evolve! ✨</button>`;
+  else acts += `<button class="btn green" data-act="feed" ${b ? '' : 'disabled'}>🫐 Feed ${nm}<small>${me && me.lv >= MAX_LV ? 'All grown up!' : 'Level up &amp; evolve'}</small></button>`;
+  acts += `<button class="btn btn-egg ${S.berries < price ? 'dim' : ''}" data-act="egg">🥚 Get an egg<small>${S.berries < price ? `${S.berries} / ${price} 🫐` : `${price} 🫐`}</small></button>`;
+  $('#homeActions').innerHTML = acts;
   const tk = trickyKeys('mix').length;
   $('#battleSub').textContent = tk ? `${tk} tricky fact${tk > 1 ? 's' : ''} to beat` : 'Beat your tricky facts';
-  $('#collectSub').textContent = `${Object.keys(S.collection).length} of ${CRITTERS.length} found`;
+  $('#collectSub').textContent = `${Object.keys(S.critters).length} of ${CRITTERS.length} found`;
+  if (!S.v2tip && b) { S.v2tip = true; save(); setTimeout(() => toast('New! Feed berries to your buddy to help it evolve!', 3500), 700); }
 }
 $('#homeBuddy').addEventListener('click', () => {
   const b = S.buddy && byId(S.buddy);
   const el = $('#homeBuddySvg');
   el.classList.remove('bob');
-  if (b) el.innerHTML = critterSVG(b, { mood: 'yay' });
+  if (b) el.innerHTML = critterSVG(b, { mood: 'yay', stage: stageOf(b.id) });
   restartAnim(el, 'jump'); sfx.ok();
-  const bub = $('#bubble'); bub.textContent = b ? pick(CHEERS) : 'Earn berries to hatch eggs!'; bub.classList.add('show');
-  setTimeout(() => { bub.classList.remove('show'); el.classList.remove('jump'); el.classList.add('bob'); if (b) el.innerHTML = critterSVG(b); }, 1300);
+  const bub = $('#bubble');
+  bub.textContent = !b ? 'Earn berries to get eggs!' : canEvolve(b.id) ? 'I feel something...!' : pick(CHEERS);
+  bub.classList.add('show');
+  setTimeout(() => { bub.classList.remove('show'); el.classList.remove('jump'); el.classList.add('bob'); if (b) el.innerHTML = critterSVG(b, { stage: stageOf(b.id) }); }, 1300);
+});
+$('#homeActions').addEventListener('click', e => {
+  const a = e.target.closest('[data-act]'); if (!a || a.disabled) return;
+  sfx.tap();
+  if (a.dataset.act === 'evolve') startEvolve(S.buddy);
+  else if (a.dataset.act === 'feed') show('feed');
+  else buyEgg();
 });
 $('#hatchBtn').addEventListener('click', () => { sfx.tap(); openHatch(); });
 $('#goCollection').addEventListener('click', () => { sfx.tap(); show('collection'); });
@@ -933,7 +1160,7 @@ function updateMeter() {
     $('#meterText').textContent = `Grumble: ${G.hp} ❤`;
   }
 }
-function updatePlayBerries() { $('#playBerries').textContent = `🫐 ${S.berries}/${S.settings.perEgg}`; }
+function updatePlayBerries() { $('#playBerries').textContent = `🫐 ${S.berries}`; }
 
 function renderStage(mood) {
   const st = $('#playStage');
@@ -942,7 +1169,7 @@ function renderStage(mood) {
     st.innerHTML = `<div class="who" id="whoEl">${grumbleSVG(gm)}</div><div class="hearts">${Array.from({ length: 10 }, (_, i) => `<span class="${i < G.hp ? '' : 'gone'}">❤️</span>`).join('')}</div>`;
   } else {
     const b = S.buddy && byId(S.buddy);
-    st.innerHTML = `<div class="who" id="whoEl">${b ? critterSVG(b, { mood }) : eggSVG(0)}</div>`;
+    st.innerHTML = `<div class="who" id="whoEl">${b ? critterSVG(b, { mood, stage: stageOf(b.id) }) : eggSVG(0)}</div>`;
   }
 }
 
@@ -1060,11 +1287,9 @@ function submit() {
   save();
 }
 function addBerries(n) {
+  const before = S.berries;
   S.berries += n; G.berries += n;
-  while (S.berries >= S.settings.perEgg) {
-    S.berries -= S.settings.perEgg; S.eggs++; G.eggs++;
-    toast('🥚 You earned an egg!'); sfx.egg();
-  }
+  if (before < eggPrice() && S.berries >= eggPrice()) { toast('🥚 You have enough berries for an egg!'); sfx.egg(); }
   updatePlayBerries();
 }
 
@@ -1098,22 +1323,40 @@ function finish() {
     $('#resBig').innerHTML = `${g.correct}<small>facts won back</small>`;
     confetti(); sfx.hatch();
   }
-  $('#resWho').innerHTML = g.mode === 'battle' ? grumbleSVG('beat') : (b ? critterSVG(b, { mood: 'yay' }) : eggSVG(0));
-  $('#resEarned').innerHTML = `You earned ${g.berries} 🫐${bonusLine}` + (g.eggs ? ` and ${g.eggs} 🥚!` : '') +
+  $('#resWho').innerHTML = g.mode === 'battle' ? grumbleSVG('beat') : (b ? critterSVG(b, { mood: 'yay', stage: stageOf(b.id) }) : eggSVG(0));
+  $('#resEarned').innerHTML = `You earned ${g.berries} 🫐${bonusLine}<br><span class="note">You have ${S.berries} 🫐 to spend</span>` +
     (g.bestCombo >= 3 ? `<br><span class="note">Best streak: ${g.bestCombo} in a row${g.mode !== 'practice' && total ? ` · ${Math.round(acc * 100)}% right` : ''}</span>` : '');
   const missed = Object.values(g.missed).slice(0, 10);
   $('#resMissed').innerHTML = missed.length ? `<h4>Facts to remember:</h4><div class="chips">${missed.map(q => `<span class="factchip">${q.a} ${q.op} ${q.b} = ${q.ans}</span>`).join('')}</div>` : '';
   const rh = $('#resHatch'); rh.classList.toggle('hidden', S.eggs <= 0);
   rh.textContent = S.eggs === 1 ? '🥚 Hatch your egg!' : `🥚 Hatch your eggs! (${S.eggs})`;
+  const me = b && S.critters[b.id];
+  let spend = '';
+  if (b && canEvolve(b.id)) spend += `<button class="btn evolve pulse" data-r="evolve">✨ Evolve ${b.names[me.stage]}!</button>`;
+  else if (b && me.lv < MAX_LV && S.berries > 0) spend += `<button class="btn green" data-r="feed">🫐 Feed ${b.names[me.stage]}</button>`;
+  if (S.berries >= eggPrice()) spend += `<button class="btn btn-egg" data-r="egg">🥚 Get an egg</button>`;
+  $('#resSpend').innerHTML = spend;
   G = null;
   show('results');
   $('#againBtn').onclick = () => { sfx.tap(); startGame(g.mode, g.skill, g.len); };
 }
 $('#quitBtn').addEventListener('click', () => { sfx.tap(); stopGame(); G = null; show('home'); });
 $('#resHatch').addEventListener('click', () => { sfx.tap(); openHatch(); });
+$('#resSpend').addEventListener('click', e => {
+  const r = e.target.closest('[data-r]'); if (!r) return;
+  sfx.tap();
+  if (r.dataset.r === 'evolve') startEvolve(S.buddy);
+  else if (r.dataset.r === 'feed') show('feed');
+  else buyEgg();
+});
 
-/* ---------------- hatching ---------------- */
+/* ---------------- eggs & hatching ---------------- */
 let eggStage = 0, hatched = null;
+function buyEgg() {
+  const price = eggPrice();
+  if (S.berries < price) { toast(`You need ${price - S.berries} more 🫐 for an egg!`); sfx.bad(); return; }
+  S.berries -= price; S.eggs++; save(); sfx.egg(); openHatch();
+}
 function openHatch() {
   if (S.eggs <= 0) return show('home');
   eggStage = 0; hatched = null;
@@ -1128,16 +1371,14 @@ $('#eggBox').addEventListener('click', () => {
   const box = $('#eggBox');
   box.innerHTML = eggSVG(eggStage); restartAnim(box, 'wobble');
   $('#hatchMsg').textContent = ['Tap the egg!', 'It\'s moving!', 'Almost there!', 'Here it comes!'][Math.min(eggStage, 3)];
-  if (eggStage >= 3) later2(doHatch, 500);
+  if (eggStage >= 3) setTimeout(doHatch, 500);
 });
-function later2(fn, ms) { setTimeout(fn, ms); }
 function rollCritter() {
-  const r = Math.random(), tier = r < .06 ? 'legendary' : r < .32 ? 'rare' : 'common';
+  const r = Math.random(), tier = r < .05 ? 'legendary' : r < .3 ? 'rare' : 'common';
   const pool = CRITTERS.filter(c => c.r === tier);
-  const fresh = pool.filter(c => !S.collection[c.id]);
-  if (fresh.length && Math.random() < .75) return pick(fresh);
-  // if this tier is complete, prefer a missing critter from any tier sometimes
-  const anyFresh = CRITTERS.filter(c => !S.collection[c.id] && c.r !== 'legendary');
+  const fresh = pool.filter(c => !S.critters[c.id]);
+  if (fresh.length && Math.random() < .7) return pick(fresh);
+  const anyFresh = CRITTERS.filter(c => !S.critters[c.id] && c.r !== 'legendary');
   if (!fresh.length && anyFresh.length && Math.random() < .5) return pick(anyFresh);
   return pick(pool);
 }
@@ -1145,41 +1386,194 @@ function doHatch() {
   if (S.eggs <= 0) return;
   const c = rollCritter();
   S.eggs--;
-  const isNew = !S.collection[c.id];
-  S.collection[c.id] = (S.collection[c.id] || 0) + 1;
-  if (!S.buddy) S.buddy = c.id;
+  let me = S.critters[c.id];
+  const isNew = !me;
+  let note = '';
+  if (isNew) {
+    me = S.critters[c.id] = { lv: 1, xp: 0, stage: 0 };
+    if (!S.buddy) S.buddy = c.id;
+  } else if (me.lv >= MAX_LV) {
+    S.berries += 15;
+    note = `${c.names[me.stage]} already lives with you and is all grown up, so you get 15 🫐 back!`;
+  } else {
+    const ups = giveXP(c.id, 20);
+    note = `${c.names[me.stage]} already lives with you, so it gets 20 bonus XP!` + (ups ? ` Now Level ${me.lv}!` : '');
+  }
   save();
   hatched = c;
   sfx.hatch(); confetti(c.r === 'legendary' ? 140 : 80);
   $('#eggPart').classList.add('hidden'); $('#reveal').classList.remove('hidden');
-  $('#revealWho').innerHTML = critterSVG(c, { mood: 'yay' }); restartAnim($('#revealWho'), 'popBig');
-  $('#revealName').textContent = c.name;
-  const lv = S.collection[c.id];
-  $('#revealBadges').innerHTML = `<span class="badge ${c.r}">${c.r === 'legendary' ? '✨ LEGENDARY' : c.r === 'rare' ? 'Rare' : 'Common'}</span>` +
-    (isNew ? `<span class="badge new">NEW!</span>` : `<span class="badge" style="background:var(--orange)">Level ${lv} ${'★'.repeat(Math.min(lv, 5))}</span>`);
+  $('#revealWho').innerHTML = critterSVG(c, { mood: 'yay', stage: me.stage }); restartAnim($('#revealWho'), 'popBig');
+  $('#revealName').textContent = c.names[me.stage];
+  $('#revealBadges').innerHTML = `<span class="badge ${c.r}">${RARITY_LABEL[c.r]}</span>` +
+    (isNew ? `<span class="badge new">NEW!</span>` : `<span class="badge" style="background:var(--orange)">Level ${me.lv}</span>`);
+  $('#revealNote').textContent = note || (isNew ? `Feed it berries to help it grow. It evolves at Level ${EVO_LV[0]}!` : '');
   $('#makeBuddy').classList.toggle('hidden', S.buddy === c.id);
-  const hn = $('#hatchNext'); hn.classList.toggle('hidden', S.eggs <= 0);
-  hn.textContent = `🥚 Hatch another (${S.eggs} left)`;
+  $('#evolveNow').classList.toggle('hidden', !canEvolve(c.id));
+  const hn = $('#hatchNext');
+  if (S.eggs > 0) { hn.classList.remove('hidden'); hn.textContent = `🥚 Hatch another (${S.eggs} left)`; }
+  else if (S.berries >= eggPrice()) { hn.classList.remove('hidden'); hn.textContent = `🥚 Get another egg (${eggPrice()} 🫐)`; }
+  else hn.classList.add('hidden');
 }
-$('#makeBuddy').addEventListener('click', () => { if (!hatched) return; S.buddy = hatched.id; save(); sfx.ok(); toast(`${hatched.name} is your buddy now!`); $('#makeBuddy').classList.add('hidden'); });
-$('#hatchNext').addEventListener('click', () => { sfx.tap(); openHatch(); });
+$('#makeBuddy').addEventListener('click', () => { if (!hatched) return; S.buddy = hatched.id; save(); sfx.ok(); toast(`${nameOf(hatched.id)} is your buddy now!`); $('#makeBuddy').classList.add('hidden'); });
+$('#evolveNow').addEventListener('click', () => { if (hatched) startEvolve(hatched.id); });
+$('#hatchNext').addEventListener('click', () => { sfx.tap(); if (S.eggs > 0) openHatch(); else buyEgg(); });
+
+/* ---------------- feeding ---------------- */
+let feeding = false;
+function renderFeed() {
+  const id = S.buddy, sp = id && byId(id);
+  if (!sp) { show('home'); return; }
+  const me = S.critters[id], nm = sp.names[me.stage];
+  $('#feedWho').innerHTML = critterSVG(sp, { stage: me.stage });
+  $('#feedWho').classList.toggle('glow', canEvolve(id));
+  $('#feedName').textContent = nm;
+  $('#feedSub').textContent = `${STAGE_NAME[me.stage]} form · Level ${me.lv}`;
+  fillXp('#fxLeft', '#fxRight', '#fxFill', me);
+  $('#feedWallet').textContent = `You have ${S.berries} 🫐`;
+  const ready = canEvolve(id), max = me.lv >= MAX_LV, none = S.berries < 1 ? 'disabled' : '';
+  let btns;
+  if (ready) btns = `<button class="btn evolve pulse" data-evo>✨ Evolve ${nm}! ✨</button>`;
+  else if (max) btns = `<button class="btn" data-go="collection" style="grid-column:1/-1">Pick a new buddy to raise</button>`;
+  else {
+    const toNext = lvNeed(me.lv) - me.xp;
+    btns = `<button class="btn green" data-feed="1" ${none}>Feed 1<small>🫐</small></button>
+            <button class="btn green" data-feed="5" ${none}>Feed 5<small>🫐 × 5</small></button>
+            <button class="btn green" data-feed="${toNext}" ${none}>Level up<small>${toNext} 🫐</small></button>`;
+  }
+  $('#feedBtns').innerHTML = btns;
+  $('#evoHint').textContent = ready ? `Tap to see what ${nm} becomes!` : max ? `${nm} is all grown up! ⭐` :
+    S.berries < 1 ? 'Out of berries! Play a game to earn more.' : `${STAGE_NAME[me.stage + 1]} form at Level ${EVO_LV[me.stage]}`;
+}
+function flyBerry(fromEl) {
+  const a = fromEl.getBoundingClientRect(), t = $('#feedWho').getBoundingClientRect();
+  const s = document.createElement('div'); s.className = 'flyBerry'; s.textContent = '🫐';
+  s.style.left = (a.left + a.width / 2 - 16) + 'px'; s.style.top = (a.top + a.height / 2 - 16) + 'px';
+  document.body.appendChild(s);
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    s.style.transform = `translate(${t.left + t.width / 2 - a.left - a.width / 2}px, ${t.top + t.height * 0.55 - a.top - a.height / 2}px) scale(.6)`;
+    s.style.opacity = '0.2';
+  }));
+  setTimeout(() => s.remove(), 480);
+}
+$('#feedBtns').addEventListener('click', e => {
+  if (e.target.closest('[data-evo]')) { startEvolve(S.buddy); return; }
+  const f = e.target.closest('[data-feed]');
+  if (!f || f.disabled || feeding) return;
+  const id = S.buddy, sp = byId(id), me = S.critters[id];
+  let n = Math.min(+f.dataset.feed, S.berries);
+  if (n <= 0) return;
+  feeding = true;
+  $$('#feedBtns button').forEach(x => x.disabled = true);
+  const step = () => {
+    if (current !== 'feed' || n <= 0 || S.berries <= 0 || canEvolve(id) || me.lv >= MAX_LV) {
+      setTimeout(() => { feeding = false; save(); if (current === 'feed') renderFeed(); }, 500);
+      return;
+    }
+    n--; S.berries--;
+    flyBerry(f);
+    const ups = giveXP(id, 1);
+    setTimeout(() => {
+      if (current !== 'feed') return;
+      const w = $('#feedWho');
+      w.innerHTML = critterSVG(sp, { stage: me.stage, mood: 'yay' }); restartAnim(w, 'jump');
+      tone(560 + Math.random() * 260, .06, 'triangle', 0, .08);
+      fillXp('#fxLeft', '#fxRight', '#fxFill', me);
+      $('#feedSub').textContent = `${STAGE_NAME[me.stage]} form · Level ${me.lv}`;
+      $('#feedWallet').textContent = `You have ${S.berries} 🫐`;
+      if (ups) {
+        sfx.combo(); confetti(35);
+        toast(canEvolve(id) ? `✨ Level ${me.lv}! ${sp.names[me.stage]} is ready to evolve!` : `⬆️ Level ${me.lv}!`);
+      }
+    }, 420);
+    setTimeout(step, n > 0 ? 170 : 0);
+  };
+  step();
+});
+
+/* ---------------- evolving ---------------- */
+let evoBusy = false, evoReturn = 'home';
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+async function startEvolve(id) {
+  if (!canEvolve(id) || evoBusy) return;
+  evoBusy = true;
+  evoReturn = current === 'detail' ? 'detail' : current === 'feed' ? 'feed' : 'home';
+  const sp = byId(id), me = S.critters[id], from = me.stage, to = from + 1;
+  me.stage = to; save();                       // saved right away, so it sticks even if the app closes
+  show('evolve');
+  const oldEl = $('#evoOld'), newEl = $('#evoNew');
+  oldEl.innerHTML = critterSVG(sp, { stage: from }); newEl.innerHTML = critterSVG(sp, { stage: to });
+  oldEl.className = 'bob'; newEl.className = ''; oldEl.style.opacity = 1; newEl.style.opacity = 0;
+  $('#evoDone').classList.add('hidden');
+  $('#evoMsg').textContent = `What? ${sp.names[from]} is evolving!`;
+  await sleep(1300);
+  oldEl.className = 'whiteout'; newEl.className = 'whiteout';
+  const beats = [420, 380, 340, 300, 260, 220, 190, 160, 140, 120, 100, 90, 80, 70, 60, 60, 60, 60];
+  let showNew = false;
+  for (let i = 0; i < beats.length; i++) {
+    showNew = !showNew;
+    oldEl.style.opacity = showNew ? 0 : 1; newEl.style.opacity = showNew ? 1 : 0;
+    tone(300 + i * 45, .08, 'triangle', 0, .07);
+    await sleep(beats[i]);
+  }
+  const fl = document.createElement('div'); fl.className = 'flash'; document.body.appendChild(fl);
+  setTimeout(() => fl.remove(), 1100);
+  await sleep(220);
+  oldEl.style.opacity = 0; newEl.style.opacity = 1; newEl.className = 'popBig';
+  newEl.innerHTML = critterSVG(sp, { stage: to, mood: 'yay' });
+  sfx.hatch(); confetti(120);
+  $('#evoMsg').textContent = `${sp.names[from]} evolved into ${sp.names[to]}!`;
+  $('#evoBadges').innerHTML = `<span class="badge legendary">${STAGE_NAME[to]} form</span><span class="badge ${sp.r}">${RARITY_LABEL[sp.r]}</span>` +
+    `<p style="margin:8px 0 0;font-weight:700">${to < 2 ? `Next evolution at Level ${EVO_LV[to]}` : 'This is its final form! ⭐'}</p>`;
+  $('#evoDone').classList.remove('hidden');
+  setTimeout(() => { newEl.className = 'bob'; newEl.innerHTML = critterSVG(sp, { stage: to }); }, 1600);
+}
+$('#evoOk').addEventListener('click', () => { evoBusy = false; sfx.tap(); show(evoReturn); });
 
 /* ---------------- collection ---------------- */
 function renderCollection() {
-  const found = Object.keys(S.collection).length;
-  $('#collHead').textContent = `You found ${found} of ${CRITTERS.length} critters!`;
+  const ids = Object.keys(S.critters);
+  const forms = ids.reduce((t, id) => t + S.critters[id].stage + 1, 0);
+  $('#collHead').innerHTML = `You found ${ids.length} of ${CRITTERS.length} critters!<br><small style="color:var(--ink-soft)">${forms} of ${CRITTERS.length * 3} forms discovered</small>`;
   $('#collGrid').innerHTML = CRITTERS.map(c => {
-    const n = S.collection[c.id];
-    return `<button class="cc ${S.buddy === c.id ? 'buddy' : ''}" data-c="${c.id}" ${n ? '' : 'disabled'}>
+    const me = S.critters[c.id];
+    return `<button class="cc ${S.buddy === c.id ? 'buddy' : ''}" data-c="${c.id}" ${me ? '' : 'disabled'}>
       <span class="rdot" style="background:${RARITY_COLOR[c.r]}"></span>
-      <div class="who">${critterSVG(c, { sil: !n })}</div>
-      <div class="nm">${n ? c.name : '???'}</div>
-      <div class="lv">${n ? 'Level ' + n : c.r === 'legendary' ? 'Legendary' : c.r === 'rare' ? 'Rare' : 'Common'}</div></button>`;
+      ${me && canEvolve(c.id) ? '<span class="ready">✨</span>' : ''}
+      <div class="who">${critterSVG(c, { sil: !me, stage: me ? me.stage : 1 })}</div>
+      <div class="nm">${me ? c.names[me.stage] : '???'}</div>
+      <div class="lv">${me ? 'Level ' + me.lv : RARITY_LABEL[c.r].replace('✨ ', '')}</div>
+      <div class="dots">${[0, 1, 2].map(i => `<i class="${me && i <= me.stage ? 'on' : ''}"></i>`).join('')}</div></button>`;
   }).join('');
 }
 $('#collGrid').addEventListener('click', e => {
   const c = e.target.closest('[data-c]'); if (!c || c.disabled) return;
-  S.buddy = c.dataset.c; save(); sfx.ok(); toast(`${byId(S.buddy).name} is your buddy now!`); renderCollection();
+  sfx.tap(); detailId = c.dataset.c; show('detail');
+});
+
+/* ---------------- one critter's page ---------------- */
+let detailId = null;
+function renderDetail() {
+  const c = byId(detailId), me = c && S.critters[detailId];
+  if (!me) { show('collection'); return; }
+  const nm = c.names[me.stage];
+  $('#dTitle').textContent = nm;
+  $('#dBadges').innerHTML = `<span class="badge ${c.r}">${RARITY_LABEL[c.r]}</span><span class="badge" style="background:var(--green)">${STAGE_NAME[me.stage]} form</span>` + (S.buddy === c.id ? `<span class="badge" style="background:var(--purple)">Your buddy</span>` : '');
+  fillXp('#dxLeft', '#dxRight', '#dxFill', me);
+  $('#dLine').innerHTML = [0, 1, 2].map(s => `<div class="form ${s === me.stage ? 'now' : ''}"><div class="who">${critterSVG(c, { stage: s, sil: s > me.stage })}</div>
+      <b>${s <= me.stage ? c.names[s] : '???'}</b><small>${s === 0 ? 'Hatches' : 'Level ' + EVO_LV[s - 1]}</small></div>`).join('<span class="arr">➜</span>');
+  let btns = '';
+  if (canEvolve(c.id)) btns += `<button class="btn evolve pulse" data-d="evolve">✨ Evolve ${nm}! ✨</button>`;
+  if (S.buddy !== c.id) btns += `<button class="btn pink" data-d="buddy">Make ${nm} my buddy 💜</button>`;
+  else if (me.lv < MAX_LV && !canEvolve(c.id)) btns += `<button class="btn green" data-d="feed">🫐 Feed ${nm}</button>`;
+  $('#dBtns').innerHTML = btns;
+}
+$('#dBtns').addEventListener('click', e => {
+  const b = e.target.closest('[data-d]'); if (!b) return;
+  sfx.tap();
+  if (b.dataset.d === 'evolve') startEvolve(detailId);
+  else if (b.dataset.d === 'feed') show('feed');
+  else { S.buddy = detailId; save(); sfx.ok(); toast(`${nameOf(detailId)} is your buddy now!`); renderDetail(); }
 });
 
 /* ---------------- grown-up corner ---------------- */
@@ -1191,7 +1585,7 @@ function factStats(keys) {
   return { acc: r.filter(Boolean).length / r.length, time: avg(t), n: r.length };
 }
 function renderParent() {
-  const st = S.stats, found = Object.keys(S.collection).length;
+  const st = S.stats, found = Object.keys(S.critters).length;
   $('#pStats').innerHTML = [
     [st.correct, 'correct answers'],
     [st.answered ? Math.round(st.correct / st.answered * 100) + '%' : '—', 'accuracy'],
@@ -1230,14 +1624,16 @@ function renderParent() {
     <div class="setting"><label>Division in Mix &amp; Grumble<small>Divide is always its own choice. Turn this on to also mix it into "Mix it up" and Grumble Battle</small></label><button class="toggle ${s.division ? 'on' : ''}" data-set="division" aria-label="Division"></button></div>
     <div class="setting"><label>Answer style<small>Typing builds stronger recall; picking is gentler</small></label><div class="mini"><button data-style="type" class="${s.style === 'type' ? 'on' : ''}">Type</button><button data-style="pick" class="${s.style === 'pick' ? 'on' : ''}">Pick</button></div></div>
     <div class="setting"><label>Auto-check<small>Checks as soon as she types enough digits (no ✓ needed)</small></label><button class="toggle ${s.autoGo ? 'on' : ''}" data-set="autoGo" aria-label="Auto-check"></button></div>
-    <div class="setting"><label>Berries per egg<small>Fewer = more frequent rewards</small></label><div class="mini">${[10, 15, 20, 30].map(n => `<button data-egg="${n}" class="${s.perEgg === n ? 'on' : ''}">${n}</button>`).join('')}</div></div>`;
+    <div class="setting"><label>Egg price<small>Berries it costs to get an egg</small></label><div class="mini">${[25, 40, 60].map(n => `<button data-egg="${n}" class="${s.eggPrice === n ? 'on' : ''}">${n}</button>`).join('')}</div></div>
+    <div class="setting"><label>Leveling speed<small>How many berries it takes to level up and evolve</small></label><div class="mini">${[['fast', 'Fast'], ['normal', 'Normal'], ['slow', 'Slow']].map(([k, l]) => `<button data-speed="${k}" class="${s.speed === k ? 'on' : ''}">${l}</button>`).join('')}</div></div>`;
 }
 $('#heatTabs').addEventListener('click', e => { const b = e.target.closest('[data-h]'); if (b) { heatOp = b.dataset.h; renderParent(); } });
 $('#pSettings').addEventListener('click', e => {
   const t = e.target.closest('[data-set]'), st = e.target.closest('[data-style]'), eg = e.target.closest('[data-egg]');
   if (t) S.settings[t.dataset.set] = !S.settings[t.dataset.set];
   else if (st) S.settings.style = st.dataset.style;
-  else if (eg) S.settings.perEgg = +eg.dataset.egg;
+  else if (eg) S.settings.eggPrice = +eg.dataset.egg;
+  else if (e.target.closest('[data-speed]')) S.settings.speed = e.target.closest('[data-speed]').dataset.speed;
   else return;
   sfx.tap(); save(); renderParent();
 });

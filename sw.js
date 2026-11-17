@@ -1,6 +1,6 @@
 // Math Critters service worker: lets the game open with no internet.
 // When you upload a new version, change this number so iPads pick it up.
-const CACHE = 'math-critters-v1';
+const CACHE = 'math-critters-v2';
 const FILES = ['./', './index.html', './manifest.webmanifest', './apple-touch-icon.png', './icon-192.png', './icon-512.png', './icon-maskable-512.png'];
 
 self.addEventListener('install', e => {
